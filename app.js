@@ -13,6 +13,7 @@
     readaloud: 'read-aloud',
     dice: 'dice',
     cast: 'cast',
+    squad: 'squad',
     finale: 'finale',
     tracker: 'tracker',
     encounters: 'encounters',
@@ -37,6 +38,149 @@
     'Silas Wren': { race: 'Rock gnome', image: 'assets/npcs/silas-wren-scene.png', alt: 'Silas Wren, a rock gnome clockmaker repairing a vast mechanism from a ladder.' },
     'Seraphine Vey': { race: 'Tiefling', image: 'assets/npcs/seraphine-vey-scene.png', alt: 'Seraphine Vey, a fragmented tiefling ward-mage bracing one hand against a cracking mirror seal.' },
   };
+  const SQUAD_MEMBERS = [
+    {
+      name: 'Rurik',
+      portrait: { race: 'Mountain dwarf', image: 'assets/squad/rurik.png', alt: 'Rurik, a bearded mountain dwarf fighter carrying a round shield and a travel pack through a market town.', width: 1408, height: 768, position: 'center 38%' },
+      identity: 'Mountain dwarf • Fighter 1 • Outlander',
+      alignment: 'Neutral Good',
+      summary: 'An exiled village champion hunting the fortune needed to recover a sacred statue and return home.',
+      stats: [['AC', '17'], ['HP', '13'], ['Initiative', '+1'], ['Passive Perception', '13']],
+      abilities: [['STR', '17', '+3'], ['DEX', '13', '+1'], ['CON', '16', '+3'], ['INT', '10', '+0'], ['WIS', '12', '+1'], ['CHA', '8', '−1']],
+      attacks: [
+        ['Warhammer · one hand', '+5 to hit', '1d8 + 3 bludgeoning'],
+        ['Warhammer · two hands', '+5 to hit', '1d10 + 3 bludgeoning'],
+        ['Handaxe', '+5 to hit', '1d6 + 3 slashing'],
+      ],
+      saves: ['Strength +5', 'Constitution +5', 'Dexterity +1', 'Intelligence +0', 'Wisdom +1', 'Charisma −1'],
+      skills: ['Athletics +5', 'Perception +3', 'Survival +3', 'Intimidation +1', 'Acrobatics +1', 'Animal Handling +1', 'Arcana +0', 'Deception −1', 'History +0', 'Insight +1', 'Investigation +0', 'Medicine +1', 'Nature +0', 'Performance −1', 'Persuasion −1', 'Religion +0', 'Sleight of Hand +1', 'Stealth +1'],
+      features: [
+        ['Defense fighting style', '+1 AC while wearing armor; included in the sheet value above.'],
+        ['Second Wind', 'Bonus action: regain 1d10 + 1 HP once per short rest.'],
+        ['Darkvision', 'See in darkness out to 60 feet.'],
+        ['Dwarven Resilience', 'Advantage on saves against poison and resistance to poison damage.'],
+        ['Stonecunning', 'Use double proficiency (+4 total) on History checks about stonework.'],
+        ['Wanderer', 'Recall general terrain and find food and water for Rurik and up to five others each day.'],
+      ],
+      proficiencies: ['Light, medium and heavy armor; shields', 'Simple and martial weapons', 'Smith’s tools (or brewer’s/mason’s tools)', 'One musical instrument', 'Common, Dwarvish and one Outlander language'],
+      equipment: ['Chain mail', 'Shield', 'Warhammer', 'Two handaxes', 'Staff', 'Hunting trap', 'Animal trophy', 'Traveler’s clothes', 'Explorer’s pack', '10 gp'],
+      roleplay: [
+        ['Trait', 'I see maybe enemy, I hit head.'],
+        ['Ideal', 'Go back to my hometown to drink again hot milk with my village in the mountain.'],
+        ['Bond', 'An injury to the unspoiled wilderness of my home is an injury to me.'],
+        ['Flaw', 'I am slow to trust members of other races, tribes, and societies, especially travelling merchants.'],
+      ],
+      story: 'Rurik lost his money, his house and the village’s sacred statue while gambling with a travelling merchant. Once the village’s champion against dangerous monsters, he insists the dice were rigged. He is exiled until he can earn enough to buy back the statue, return home and marry the village’s daughter.',
+    },
+    {
+      name: 'Aldric the Vigilant',
+      portrait: { race: 'Variant human', image: 'assets/squad/aldric-the-vigilant.png', alt: 'Aldric the Vigilant, a human paladin in dark red armor marked with a crescent, holding a rapier.', width: 1024, height: 1536, position: 'center 6%' },
+      identity: 'Variant human • Paladin 3 • Oath of the Watchers',
+      alignment: 'Neutral / morally grey',
+      summary: 'A quick, watchful courier wearing a vanished hero’s armor and trying to live up to an oath that was never meant for him.',
+      stats: [['AC', '19'], ['HP', '29*'], ['Initiative', '+8'], ['Passive Perception', '11']],
+      statsNote: '* Use 25 HP instead if taking the fixed level-up average.',
+      abilities: [['STR', '13', '+1'], ['DEX', '16', '+3'], ['CON', '12', '+1'], ['INT', '8', '−1'], ['WIS', '8', '−1'], ['CHA', '16', '+3']],
+      attacks: [
+        ['Rapier', '+5 to hit', '1d8 + 3 piercing; one-handed with shield'],
+        ['Javelin', '+3 to hit', '1d6 + 1 piercing'],
+        ['Divine Smite', 'On a melee hit', 'Spend a slot for +2d8 radiant; +3d8 against fiends or undead'],
+      ],
+      saves: ['Charisma +5', 'Strength +3', 'Dexterity +3', 'Constitution +1', 'Intelligence −1', 'Wisdom +1'],
+      skills: ['Acrobatics +5', 'Stealth +5', 'Persuasion +5', 'Perception +1', 'Insight +1'],
+      features: [
+        ['Alert', '+5 initiative; cannot be surprised while conscious; unseen attackers gain no advantage merely for being unseen.'],
+        ['Divine Sense', 'Action; 4 uses per long rest. Detect celestials, fiends, undead and consecrated or desecrated places within 60 feet when not behind total cover.'],
+        ['Lay on Hands', '15 HP healing pool per long rest; spend 5 HP to cure one poison or disease.'],
+        ['Defense fighting style', '+1 AC while wearing armor; included above.'],
+        ['Divine Health', 'Immune to disease.'],
+        ['Watcher’s Will', 'Channel Divinity action: Aldric and up to three creatures within 30 feet gain advantage on Intelligence, Wisdom and Charisma saves for 1 minute.'],
+        ['Abjure the Extraplanar', 'Channel Divinity action: aberrations, celestials, elementals, fey and fiends within 30 feet make a Wisdom save; on failure they are turned for 1 minute or banished home if from another plane.'],
+        ['Courier’s Route', 'Knows city streets, courier customs, reliable safehouses and how to move a package—or people—past trouble.'],
+      ],
+      proficiencies: ['All armor and shields', 'Simple and martial weapons', 'Cartographer’s tools and land vehicles', 'Common and Celestial', 'Spell save DC 13; spell attack +5', 'Proficiency bonus +2'],
+      equipment: ['The vanished hero’s scale mail, shield and holy symbol', 'Rapier', 'Five javelins', 'Explorer’s pack', 'Cartographer’s tools', 'Courier satchel', 'Marked city map', 'Damaged delivery receipt'],
+      spells: [
+        ['Bless', 'Action • 30 ft. • concentration, 1 minute', 'Up to three creatures add 1d4 to attack rolls and saving throws.'],
+        ['Command', 'Action • 60 ft. • 1 round', 'On a failed Wisdom save, the target follows a safe one-word command such as Drop, Flee or Halt.'],
+        ['Cure wounds', 'Action • touch', 'Restore 1d8 + 3 HP.'],
+        ['Shield of faith', 'Bonus action • 60 ft. • concentration, 10 minutes', 'One creature gains +2 AC.'],
+        ['Alarm · oath', '1 minute • 30 ft. • 8 hours', 'Protect a door, window or area up to a 20-foot cube with an audible or mental alarm. Costs a spell slot.'],
+        ['Detect magic · oath', 'Action • self • concentration, 10 minutes', 'Sense magic within 30 feet, see visible auras and learn the school of a visible effect.'],
+      ],
+      spellOptions: [
+        ['Compelled duel', 'Challenge one creature to focus on Aldric.'], ['Detect evil and good', 'Sense certain supernatural creatures and consecrated or desecrated places.'], ['Detect poison and disease', 'Detect nearby poisons, poisonous creatures and diseases.'], ['Divine favor', 'Add radiant damage to weapon attacks while concentrating.'], ['Heroism', 'Grant temporary HP each turn and immunity to fear.'], ['Protection from evil and good', 'Protect an ally from several supernatural creature types.'], ['Purify food and drink', 'Cleanse nonmagical food and drink.'], ['Searing smite', 'Next melee hit adds fire damage and may keep burning.'], ['Thunderous smite', 'Next melee hit adds thunder damage and may push and knock prone.'], ['Wrathful smite', 'Next melee hit adds psychic damage and may frighten.'],
+      ],
+      roleplay: [
+        ['Trait', 'I automatically plan the fastest exit from every room.'],
+        ['Ideal', 'A promise to deliver something is a promise, even if the destination is hell.'],
+        ['Bond', 'The missing hero’s god has given me a chance to set this right; I refuse to waste it.'],
+        ['Flaw', 'When someone calls me “hero,” I worry they will ask a question I cannot answer.'],
+      ],
+      secrets: [
+        ['True name', 'Rorik'],
+        ['The lie', 'The city believes the hero left on their destined adventure. In truth, Rorik wore the hero’s armor and fled after a forbidden artifact turned their laboratory into a disaster site. He does not know whether the hero is dead, displaced, transformed, imprisoned—or watching.'],
+        ['The oath', 'Do not invite the artifact’s corruption in, bargain with fiends or their servants, abandon people depending on you, or treat consequences as someone else’s problem.'],
+      ],
+      rest: ['Short rest: regain one use of Channel Divinity.', 'Long rest: restore HP, three 1st-level spell slots, Lay on Hands and Divine Sense; prepared paladin spells may change.'],
+    },
+    {
+      name: 'Mictlantlique',
+      portrait: { race: 'Reborn', image: 'assets/squad/mictlantlique-game.png', alt: 'Mictlantlique, a flower-crowned skeletal warlock in colorful teal, crimson, violet and gold pilgrim vestments, holding a lit red candle and rosary inside a warm medieval inn.', width: 1672, height: 941, position: 'center 42%' },
+      identity: 'Reborn • Undead Warlock 3 • Pact of the Tome',
+      alignment: 'Chaotic Neutral',
+      summary: 'A cast-down minor deity following the only clue waiting beside the grave where she awoke: an invitation to the escort mission.',
+      stats: [['AC', '13'], ['HP', '24'], ['Initiative', '+2'], ['Passive Perception', '12']],
+      abilities: [['STR', '8', '−1'], ['DEX', '14', '+2'], ['CON', '15', '+2'], ['INT', '10', '+0'], ['WIS', '10', '+0'], ['CHA', '17', '+3']],
+      attacks: [
+        ['Eldritch blast', '+5 to hit', '1d10 + 3 force damage; no spell slot required.'],
+        ['Toll the dead', 'Wisdom save DC 13', '1d8 necrotic, or 1d12 if the target is already missing HP.'],
+        ['Dagger', '+4 to hit', '1d4 + 2 piercing.'],
+      ],
+      saves: ['Charisma +5', 'Wisdom +2', 'Dexterity +2', 'Constitution +2', 'Intelligence +0', 'Strength −1'],
+      skills: ['Deception +5', 'Arcana +2', 'History +2', 'Insight +2', 'Perception +2', 'Religion +2'],
+      features: [
+        ['Deathless Nature', 'Advantage against disease and poison, resistance to poison damage, no need to eat, drink, breathe or sleep, and a motionless 4-hour rest provides a long rest.'],
+        ['Knowledge from a Past Life', 'Twice per long rest, after failing an ability check, add 1d6 as a half-remembered prayer, name, sign or divine instinct.'],
+        ['Pact Magic', 'Two 2nd-level spell slots, restored after a short or long rest. Charisma is the spellcasting ability.'],
+        ['Form of Dread', 'Twice per long rest, use a bonus action for 1 minute: gain 1d10 + 3 temporary HP, become immune to fear and potentially frighten one target hit each turn.'],
+        ['Book of Shadows', 'The escort invitation develops black margins and new pages. It holds thaumaturgy, mage hand and toll the dead.'],
+        ['Agonizing Blast', 'Add Charisma modifier (+3) to each eldritch blast beam’s damage.'],
+        ['Book of Ancient Secrets', 'The Book of Shadows is a ritual book beginning with detect magic and find familiar.'],
+        ['Shelter of the Faithful', 'Temples may offer modest support to a recognized servant of the gods, though her cast-down status can make that recognition tense.'],
+      ],
+      proficiencies: ['Light armor', 'Simple weapons', 'Common, Celestial and two Acolyte languages', 'Spell save DC 13; spell attack +5', 'Proficiency bonus +2'],
+      equipment: ['Leather armor', 'Dagger', 'Cracked bead arcane focus', 'Scholar’s pack', 'Silent holy symbol', 'Vestments and prayer book', 'Five sticks of incense', 'Common clothes', '15 gp', 'Invitation / Book of Shadows', 'Sealed vial of grave soil'],
+      spells: [
+        ['Eldritch blast · cantrip', 'Action • spell attack', 'One beam for 1d10 + 3 force damage.'],
+        ['Minor illusion · cantrip', 'Action • 1 minute', 'Create a sound or a motionless image inside a 5-foot cube.'],
+        ['Thaumaturgy · tome cantrip', 'Action • up to 1 minute', 'Create a minor supernatural sign such as a booming voice, altered flame or harmless tremor.'],
+        ['Mage hand · tome cantrip', 'Action • 1 minute', 'A spectral hand manipulates an object weighing up to 10 pounds.'],
+        ['Toll the dead · tome cantrip', 'Action • Wisdom save', 'Deal 1d8 necrotic, or 1d12 if the target is wounded.'],
+        ['Armor of Agathys', 'Action • 1 hour', 'At 2nd level gain 10 temporary HP; melee attackers take 10 cold damage while those HP remain.'],
+        ['Cause fear', 'Action • concentration, 1 minute', 'One creature makes a Wisdom save or becomes frightened.'],
+        ['Hex', 'Bonus action • concentration, 1 hour', 'Add 1d6 necrotic damage when hitting the target and hinder checks with one chosen ability.'],
+        ['Misty step', 'Bonus action • self', 'Teleport up to 30 feet to a visible unoccupied space.'],
+        ['Detect magic · ritual', '10-minute ritual', 'Sense magic and see magical auras without spending a spell slot.'],
+        ['Find familiar · ritual', '70-minute ritual', 'Summon a spirit companion in a normal familiar form.'],
+      ],
+      magicSummary: '2 slots • 4 known • 5 cantrips',
+      spellSectionTitle: 'Pact magic, cantrips and rituals',
+      roleplay: [
+        ['Trait', 'I still expect doors to open for me, then remember that I am no longer anyone important.'],
+        ['Ideal', 'The dead deserve dignity; the gods must also be accountable for what they do with them.'],
+        ['Bond', 'I will learn why a dead gravedigger held this invitation when I woke, even if the answer condemns me.'],
+        ['Flaw', 'I treat every kindness from a god as a bargain with unseen terms.'],
+      ],
+      secrets: [
+        ['Former existence', 'Mictlantlique remembers that she was once a minor god, but not her divine office or why the greater gods cast her down.'],
+        ['Grave awakening', 'She first became aware inside a skeleton’s body beside an opened grave and a dead gravedigger holding the escort invitation.'],
+        ['Unknown patron', 'Her deathly power may be a remnant of divinity, a bargain from the gods, or an opportunistic being exploiting her fall.'],
+      ],
+      rest: ['Short rest: restore both 2nd-level Pact Magic slots.', 'Long rest: restore both slots, Form of Dread uses and Knowledge from a Past Life uses; four hours of motionless inactivity is enough.'],
+    },
+  ];
+  const SQUAD_SCENE = { race: 'Escort departure', image: 'assets/squad/squad-preparing-carriage.png', alt: 'Rurik, Aldric and Mictlantlique preparing a horse-drawn carriage outside the roadside inn at dawn while Elias checks the route in the background.', width: 1672, height: 941 };
   const TRACKS = {
     bond: { label: 'Bond', sublabel: 'relationships', color: 'teal', max: 8 },
     truth: { label: 'Truth', sublabel: 'understanding', color: 'amber', max: 8 },
@@ -391,11 +535,12 @@
         : state.view === 'readaloud' ? 'Read aloud'
           : state.view === 'dice' ? 'Dice roller'
             : state.view === 'cast' ? 'The cast'
-              : state.view === 'finale' ? 'Finale'
-              : state.view === 'tracker' ? 'Campaign tracker'
-                : state.view === 'encounters' ? 'Road to Ashfall'
-                  : state.view === 'cheatsheet' ? 'D&D cheatsheet'
-                  : findSection(state.view.replace('section:', ''))?.title || 'Guide';
+              : state.view === 'squad' ? 'The squad'
+                : state.view === 'finale' ? 'Finale'
+                : state.view === 'tracker' ? 'Campaign tracker'
+                  : state.view === 'encounters' ? 'Road to Ashfall'
+                    : state.view === 'cheatsheet' ? 'D&D cheatsheet'
+                    : findSection(state.view.replace('section:', ''))?.title || 'Guide';
     $('#breadcrumb').innerHTML = `<span class="breadcrumb-muted">ASHFALL</span><span class="breadcrumb-slash">/</span><span>${escapeHTML(label)}</span>`;
   }
 
@@ -717,6 +862,51 @@
     return `<div class="reference-header"><div><div class="eyebrow">WHO ACTS NEXT • WHAT THEY START • WHAT SURVIVES</div><h1>The cast</h1><p>Choose the character whose story job matches what the party needs now. Their dossier gives motive and secrets; the cards below tell you when to bring them in and which event they start.</p></div><div class="heading-actions"><button class="button button-sm" type="button" data-view="section:${slugify('NPC quick reference')}">Open full handoff →</button></div></div><div class="cast-handoff" aria-label="Character story handoff">${handoff.map(([stage,name], index) => `<div><span>${escapeHTML(stage)}</span><strong>${escapeHTML(name)}</strong>${index < handoff.length - 1 ? '<i>→</i>' : ''}</div>`).join('')}</div><div class="cast-grid">${sections.map(renderNpcCard).join('')}</div>`;
   }
 
+  function renderSquadTagList(items, className = 'squad-tag-list') {
+    return `<div class="${className}">${items.map(item => `<span>${escapeHTML(item)}</span>`).join('')}</div>`;
+  }
+
+  function renderSquadActions(items) {
+    return `<div class="squad-action-list">${items.map(([name, roll, detail]) => `<article><div><strong>${escapeHTML(name)}</strong><span>${escapeHTML(roll)}</span></div><p>${escapeHTML(detail)}</p></article>`).join('')}</div>`;
+  }
+
+  function renderSquadFacts(items) {
+    return `<dl class="squad-facts">${items.map(([label, detail]) => `<div><dt>${escapeHTML(label)}</dt><dd>${escapeHTML(detail)}</dd></div>`).join('')}</dl>`;
+  }
+
+  function renderSquadMember(member, index) {
+    const portrait = member.portrait;
+    const portraitButton = `<button class="squad-portrait npc-portrait-trigger" type="button" data-portrait-name="${escapeHTML(member.name)}" aria-label="Show ${escapeHTML(member.name)} portrait full screen"><img src="${escapeHTML(portrait.image)}" alt="${escapeHTML(portrait.alt)}" width="${portrait.width}" height="${portrait.height}" loading="lazy" style="object-position:${escapeHTML(portrait.position)}" /><span class="portrait-open-hint" aria-hidden="true">⛶ Show portrait</span></button>`;
+    if (member.pending) {
+      return `<article class="card squad-profile squad-profile-empty" id="squad-${slugify(member.name)}">
+        ${portraitButton}
+        <div class="squad-profile-main"><div class="squad-profile-heading"><div><span class="squad-number">0${index + 1}</span><div class="eyebrow">PLAYER CHARACTER</div><h2>${escapeHTML(member.name)}</h2><p class="squad-identity">${escapeHTML(member.identity)}</p></div></div><div class="squad-blank" aria-label="${escapeHTML(member.name)} character details"></div></div>
+      </article>`;
+    }
+    const stats = `<div class="squad-stat-strip">${member.stats.map(([label, value]) => `<div><span>${escapeHTML(label)}</span><strong>${escapeHTML(value)}</strong></div>`).join('')}</div>${member.statsNote ? `<p class="squad-stat-note">${escapeHTML(member.statsNote)}</p>` : ''}`;
+    const abilities = `<div class="squad-ability-grid">${member.abilities.map(([name, score, modifier]) => `<div><span>${escapeHTML(name)}</span><strong>${escapeHTML(score)}</strong><small>${escapeHTML(modifier)}</small></div>`).join('')}</div>`;
+    const features = `<div class="squad-feature-list">${member.features.map(([name, detail]) => `<article><strong>${escapeHTML(name)}</strong><p>${escapeHTML(detail)}</p></article>`).join('')}</div>`;
+    const spells = member.spells ? `<details class="squad-detail"><summary><span>Magic</span><small>${escapeHTML(member.magicSummary || '3 slots • 4 prepared + 2 oath spells')}</small></summary><div class="squad-detail-body"><div class="squad-section-title"><span>${escapeHTML(member.spellSectionTitle || 'Prepared and oath spells')}</span><strong>Spell save DC 13</strong></div>${renderSquadActions(member.spells)}${member.spellOptions?.length ? `<div class="squad-subsection"><h3>Other 1st-level options</h3>${renderSquadActions(member.spellOptions.map(([name, detail]) => [name, 'Prepare after a long rest', detail]))}</div>` : ''}</div></details>` : '';
+    const secrets = member.secrets ? `<div class="squad-secret spoiler-block ${state.showSecrets ? '' : 'is-hidden'}"><div class="spoiler-content"><div class="squad-section-title"><span>Private identity</span><strong>DM / player secret</strong></div>${renderSquadFacts(member.secrets)}</div></div>` : '';
+    return `<article class="card squad-profile" id="squad-${slugify(member.name)}">
+      ${portraitButton}
+      <div class="squad-profile-main">
+        <div class="squad-profile-heading"><div><span class="squad-number">0${index + 1}</span><div class="eyebrow">PLAYER CHARACTER</div><h2>${escapeHTML(member.name)}</h2><p class="squad-identity">${escapeHTML(member.identity)}</p></div></div>
+        <p class="squad-summary">${escapeHTML(member.summary)}</p>
+        ${stats}
+        <details class="squad-detail" open><summary><span>Combat &amp; checks</span><small>At-table numbers</small></summary><div class="squad-detail-body"><div class="squad-section-title"><span>Ability scores</span><strong>${escapeHTML(member.alignment)}</strong></div>${abilities}<div class="squad-subsection"><h3>Attacks</h3>${renderSquadActions(member.attacks)}</div><div class="squad-check-columns"><section><h3>Saving throws</h3>${renderSquadTagList(member.saves)}</section><section><h3>Skills</h3>${renderSquadTagList(member.skills)}</section></div></div></details>
+        <details class="squad-detail"><summary><span>Features &amp; proficiencies</span><small>What the character can do</small></summary><div class="squad-detail-body">${features}<div class="squad-subsection"><h3>Proficiencies &amp; languages</h3>${renderSquadTagList(member.proficiencies)}</div>${member.rest ? `<div class="squad-rest">${member.rest.map(item => `<p>${escapeHTML(item)}</p>`).join('')}</div>` : ''}</div></details>
+        ${spells}
+        <details class="squad-detail"><summary><span>Equipment &amp; roleplay</span><small>Inventory, hooks and history</small></summary><div class="squad-detail-body"><div class="squad-subsection"><h3>Equipment</h3>${renderSquadTagList(member.equipment)}</div>${renderSquadFacts(member.roleplay)}${member.story ? `<div class="squad-story"><span>Background story</span><p>${escapeHTML(member.story)}</p></div>` : ''}</div></details>
+        ${secrets}
+      </div>
+    </article>`;
+  }
+
+  function renderSquad() {
+    return `<div class="reference-header squad-header"><div><div class="eyebrow">PLAYER CHARACTERS • QUICK REFERENCE • TABLE READY</div><h1>The squad</h1><p>Keep the party’s portraits, combat numbers, abilities and roleplay hooks together before the road carries them into Ashfall.</p></div></div><button class="squad-group-scene npc-portrait-trigger" type="button" data-portrait-name="The squad" aria-label="Show the squad preparing the carriage full screen"><img src="${escapeHTML(SQUAD_SCENE.image)}" alt="${escapeHTML(SQUAD_SCENE.alt)}" width="${SQUAD_SCENE.width}" height="${SQUAD_SCENE.height}" /><span class="squad-group-caption"><small>ESCORT DEPARTURE</small><strong>Preparing the carriage</strong></span><span class="portrait-open-hint" aria-hidden="true">⛶ Show scene</span></button><nav class="squad-jump" aria-label="Squad members">${SQUAD_MEMBERS.map(member => `<button type="button" data-squad-target="squad-${slugify(member.name)}">${escapeHTML(member.name)}</button>`).join('')}</nav><div class="squad-list">${SQUAD_MEMBERS.map(renderSquadMember).join('')}</div>`;
+  }
+
   function renderFinale() {
     const table = findTable('Ending');
     const endings = table?.rows.slice(1) || [];
@@ -795,6 +985,7 @@
     if (state.view === 'readaloud') return renderReadAloud();
     if (state.view === 'dice') return renderDicePage();
     if (state.view === 'cast') return renderCast();
+    if (state.view === 'squad') return renderSquad();
     if (state.view === 'finale') return renderFinale();
     if (state.view === 'tracker') return renderTracker();
     if (state.view === 'encounters') return renderEncounters();
@@ -848,7 +1039,8 @@
   }
 
   function openNpcPortrait(name, trigger) {
-    const npc = NPC_META[name];
+    const squadMember = SQUAD_MEMBERS.find(member => member.name === name);
+    const npc = NPC_META[name] || squadMember?.portrait || (name === 'The squad' ? SQUAD_SCENE : null);
     const dialog = $('#npc-portrait-dialog');
     if (!npc || !dialog) return;
     $('#npc-portrait-image').src = npc.image;
@@ -890,6 +1082,8 @@
     }
     const portrait = event.target.closest('[data-portrait-name]');
     if (portrait) { openNpcPortrait(portrait.dataset.portraitName, portrait); return; }
+    const squadTarget = event.target.closest('[data-squad-target]');
+    if (squadTarget) { document.getElementById(squadTarget.dataset.squadTarget)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
     const view = event.target.closest('[data-view]');
     if (view) { setView(view.dataset.view); return; }
     const section = event.target.closest('[data-section]');
@@ -965,6 +1159,7 @@
     if (event.target.matches('[data-dice-input]') && event.key === 'Enter') { event.preventDefault(); performDiceRoll(event.target.value); return; }
     if (event.target.matches('input, textarea, select')) return;
     if (['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(event.key)) setView(['desk', 'map', 'readaloud', 'dice', 'cast', 'finale', 'tracker', 'encounters', 'cheatsheet'][Number(event.key) - 1]);
+    if (!event.metaKey && !event.ctrlKey && !event.altKey && event.key.toLowerCase() === 's') setView('squad');
     if (event.key === 'Escape') { $('#search-results-panel').hidden = true; $('.search-box')?.classList.remove('search-open'); $('#sidebar').classList.remove('open'); }
   }
 
