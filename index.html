@@ -10,7 +10,7 @@
       content="A static DM control room for Ashfall: The Day That Refuses to Die."
     />
     <title>Ashfall — DM Control Room</title>
-    <link rel="stylesheet" href="styles.css?v=squad-cast-v2" />
+    <link rel="stylesheet" href="styles.css?v=collapsible-sidebar" />
   </head>
   <body>
     <div class="app-shell">
@@ -24,19 +24,25 @@
         </div>
 
         <div class="sidebar-scroll">
-          <div class="side-section-label">At the table</div>
-          <nav class="primary-nav" aria-label="Primary navigation">
-            <button class="nav-item" data-view="desk"><span class="nav-icon">◈</span><span>Session desk</span><kbd>1</kbd></button>
-            <button class="nav-item" data-view="map"><span class="nav-icon">⌖</span><span>Map</span><kbd>2</kbd></button>
-            <button class="nav-item" data-view="readaloud"><span class="nav-icon">◌</span><span>Read aloud</span><kbd>3</kbd></button>
-            <button class="nav-item" data-view="dice"><span class="nav-icon">⚄</span><span>Dice roller</span><kbd>4</kbd></button>
-            <button class="nav-item" data-view="cast"><span class="nav-icon">♙</span><span>The cast</span><kbd>5</kbd></button>
-            <button class="nav-item" data-view="finale"><span class="nav-icon">✦</span><span>Finale</span><kbd>6</kbd></button>
-            <button class="nav-item" data-view="tracker"><span class="nav-icon">⌁</span><span>Campaign tracker</span><kbd>7</kbd></button>
-            <button class="nav-item" data-view="squad"><span class="nav-icon">♜</span><span>The squad</span><kbd>S</kbd></button>
-          </nav>
+          <details class="nav-folder table-folder" id="table-folder" open>
+            <summary>
+              <span class="folder-chevron" aria-hidden="true">›</span>
+              <span>At the table</span>
+              <span class="section-count">8</span>
+            </summary>
+            <nav class="primary-nav" aria-label="Primary navigation">
+              <button class="nav-item" data-view="desk"><span class="nav-icon">◈</span><span>Session desk</span><kbd>1</kbd></button>
+              <button class="nav-item" data-view="map"><span class="nav-icon">⌖</span><span>Map</span><kbd>2</kbd></button>
+              <button class="nav-item" data-view="readaloud"><span class="nav-icon">◌</span><span>Read aloud</span><kbd>3</kbd></button>
+              <button class="nav-item" data-view="dice"><span class="nav-icon">⚄</span><span>Dice roller</span><kbd>4</kbd></button>
+              <button class="nav-item" data-view="cast"><span class="nav-icon">♙</span><span>The cast</span><kbd>5</kbd></button>
+              <button class="nav-item" data-view="finale"><span class="nav-icon">✦</span><span>Finale</span><kbd>6</kbd></button>
+              <button class="nav-item" data-view="tracker"><span class="nav-icon">⌁</span><span>Campaign tracker</span><kbd>7</kbd></button>
+              <button class="nav-item" data-view="squad"><span class="nav-icon">♜</span><span>The squad</span><kbd>S</kbd></button>
+            </nav>
+          </details>
 
-          <details class="encounter-folder" id="encounter-folder" open>
+          <details class="nav-folder encounter-folder" id="encounter-folder" open>
             <summary>
               <span class="folder-chevron" aria-hidden="true">›</span>
               <span>Encounters</span>
@@ -51,16 +57,25 @@
             </nav>
           </details>
 
-          <div class="side-section-label">Rules reference</div>
-          <nav class="rules-nav" aria-label="Rules reference">
-            <button class="nav-item" data-view="cheatsheet"><span class="nav-icon">◇</span><span>D&amp;D cheatsheet</span><kbd>9</kbd></button>
-          </nav>
+          <details class="nav-folder rules-folder" id="rules-folder" open>
+            <summary>
+              <span class="folder-chevron" aria-hidden="true">›</span>
+              <span>Rules reference</span>
+              <span class="section-count">1</span>
+            </summary>
+            <nav class="rules-nav" aria-label="Rules reference">
+              <button class="nav-item" data-view="cheatsheet"><span class="nav-icon">◇</span><span>D&amp;D cheatsheet</span><kbd>9</kbd></button>
+            </nav>
+          </details>
 
-          <div class="side-section-label section-label-with-action">
-            <span>Guide sections</span>
-            <span class="section-count" id="section-count">26</span>
-          </div>
-          <nav class="guide-nav" id="guide-nav" aria-label="Guide sections"></nav>
+          <details class="nav-folder guide-folder" id="guide-folder" open>
+            <summary>
+              <span class="folder-chevron" aria-hidden="true">›</span>
+              <span>Guide sections</span>
+              <span class="section-count" id="section-count">26</span>
+            </summary>
+            <nav class="guide-nav" id="guide-nav" aria-label="Guide sections"></nav>
+          </details>
         </div>
 
         <div class="sidebar-footer">
@@ -142,7 +157,7 @@
       </div>
     </dialog>
 
-    <script src="content.js"></script>
-    <script src="app.js?v=squad-cast-v2"></script>
+    <script src="content.js?v=spoiler-shield-audit"></script>
+    <script src="app.js?v=spoiler-shield-audit"></script>
   </body>
 </html>

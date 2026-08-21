@@ -93,29 +93,19 @@ def make_site_content() -> dict:
     if current['blocks']:
         sections.append(current)
 
-    spoiler_sections = {
-        'The true story of Ashfall',
-        'Elias and the crystal',
-        'Earlier adventuring parties',
-        'Possible endings',
-        'Finale preparation sheet',
+    # The guide is a DM document. Treat campaign-specific material as protected
+    # by default; only explicitly player-safe/read-aloud or system-reference
+    # sections may remain visible while the spoiler shield is active. This is
+    # deliberately conservative so a newly added heading cannot leak merely
+    # because it was not added to a fragile keyword list.
+    player_safe_sections = {
+        'Blank NPC record',
     }
-    spoiler_headings = {
-        'What happened 307 years ago',
-        'What they should eventually learn',
-        'Hidden truth',
-        'DM secret',
-        'His preferred ending',
-    }
-
     for section in sections:
-        in_spoiler = section['title'] in spoiler_sections
+        in_spoiler = section['title'] not in player_safe_sections
+        section['spoiler_title'] = in_spoiler
         for block in section['blocks']:
-            if block['type'] == 'h2':
-                in_spoiler = block['text'] in spoiler_headings or section['title'] in spoiler_sections
-                block['spoiler'] = in_spoiler
-            else:
-                block['spoiler'] = in_spoiler
+            block['spoiler'] = in_spoiler
 
     return {
         'title': document.core_properties.title,

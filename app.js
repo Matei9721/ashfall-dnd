@@ -530,7 +530,7 @@
   }
 
   function updateBreadcrumb() {
-    const label = state.view === 'desk' ? 'Session desk'
+    let label = state.view === 'desk' ? 'Session desk'
       : state.view === 'map' ? 'Map'
         : state.view === 'readaloud' ? 'Read aloud'
           : state.view === 'dice' ? 'Dice roller'
@@ -541,6 +541,8 @@
                   : state.view === 'encounters' ? 'Road to Ashfall'
                     : state.view === 'cheatsheet' ? 'D&D cheatsheet'
                     : findSection(state.view.replace('section:', ''))?.title || 'Guide';
+    const currentSection = state.view.startsWith('section:') ? findSection(state.view.replace('section:', '')) : null;
+    if (currentSection?.spoiler_title && !state.showSecrets) label = 'Spoiler-protected section';
     $('#breadcrumb').innerHTML = `<span class="breadcrumb-muted">ASHFALL</span><span class="breadcrumb-slash">/</span><span>${escapeHTML(label)}</span>`;
   }
 
@@ -549,10 +551,13 @@
     const skip = new Set(['Campaign overview', 'Read-aloud descriptions', 'Campaign tracker', 'Loop and session log', 'Finale preparation sheet', 'Blank NPC record']);
     nav.innerHTML = CONTENT.sections
       .filter(section => !skip.has(section.title))
-      .map(section => `
+      .map(section => {
+        const protectedTitle = section.spoiler_title && !state.showSecrets;
+        return `
         <button class="nav-item ${state.view === `section:${section.slug}` ? 'active' : ''}" data-section="${escapeHTML(section.slug)}">
-          <span class="nav-icon">·</span><span>${escapeHTML(section.title)}</span>
-        </button>`).join('');
+          <span class="nav-icon">${protectedTitle ? '◉' : '·'}</span><span>${protectedTitle ? 'Spoiler-protected section' : escapeHTML(section.title)}</span>
+        </button>`;
+      }).join('');
     $('#section-count').textContent = CONTENT.sections.length;
   }
 
@@ -573,19 +578,19 @@
     const scene = state.scene.trim() || 'No active scene yet.';
     const nextRevelationCount = Object.values(state.revelations).filter(Boolean).length;
     $('#rail-content').innerHTML = `
-      <div class="rail-card">
+      <div class="spoiler-block ${state.showSecrets ? '' : 'is-hidden'}"><div class="spoiler-content"><div class="rail-card">
         <span class="mini-label">Current loop</span>
         <h3>Loop ${escapeHTML(state.loop)}</h3>
         <p>${escapeHTML(scene)}</p>
         <div class="rail-divider"></div>
         <button class="button button-warm button-sm" type="button" data-action="next-loop">Begin next loop <span>↗</span></button>
-      </div>
-      <div class="rail-card">
+      </div></div></div>
+      <div class="spoiler-block ${state.showSecrets ? '' : 'is-hidden'}"><div class="spoiler-content"><div class="rail-card">
         <span class="mini-label">Crystal imprints</span>
         <div class="mini-tracks">${renderTrackRows(true)}</div>
         <div class="rail-divider"></div>
         <p>${nextRevelationCount} essential revelation${nextRevelationCount === 1 ? '' : 's'} logged.</p>
-      </div>
+      </div></div></div>
       <div class="rail-card">
         <span class="mini-label">Spoiler shield</span>
         <p>${state.showSecrets ? 'Secrets are visible. Turn the eye off before sharing your screen.' : 'Secrets are hidden. Reveal them when you need the deeper truth.'}</p>
@@ -673,7 +678,7 @@
 
   function renderMap() {
     const selected = MAP_LOCATIONS.find(location => location.id === state.map.selected) || MAP_LOCATIONS[0];
-    const safeMode = !state.map.showDetails;
+    const safeMode = !state.showSecrets || !state.map.showDetails;
     const selectedName = safeMode ? selected.playerName : selected.name;
     const selectedSubtitle = safeMode ? selected.playerSubtitle : selected.subtitle;
     const selectedDetail = safeMode
@@ -793,7 +798,9 @@
     const npc = NPC_META[section.title];
     const dossierMeta = npc ? `<div class="npc-dossier-meta"><span>${escapeHTML(npc.race)}</span><span>NPC dossier</span></div>` : '';
     const portrait = npc ? `<button class="npc-dossier-portrait npc-portrait-trigger" type="button" data-portrait-name="${escapeHTML(section.title)}" aria-label="Show ${escapeHTML(section.title)} portrait full screen"><img src="${escapeHTML(npc.image)}" alt="${escapeHTML(npc.alt)}" width="1254" height="1254" /><span class="portrait-open-hint" aria-hidden="true">⛶ Show portrait</span></button>` : '';
-    return `<div class="reference-header ${npc ? 'npc-reference-header' : ''}"><div><div class="eyebrow">GUIDE REFERENCE</div><h1>${escapeHTML(section.title)}</h1><p>${escapeHTML(sectionDescription(section))}</p>${dossierMeta}</div><div class="${npc ? 'npc-reference-side' : ''}"><div class="heading-actions"><button class="button button-sm" type="button" data-action="toggle-secrets">${state.showSecrets ? '◉ Hide secrets' : '◉ Reveal secrets'}</button></div>${portrait}</div></div>
+    const headerProtected = section.blocks.some(block => block.spoiler);
+    const header = `<div class="reference-header ${npc ? 'npc-reference-header' : ''}"><div><div class="eyebrow">GUIDE REFERENCE</div><h1>${escapeHTML(section.title)}</h1><p>${escapeHTML(sectionDescription(section))}</p>${dossierMeta}</div><div class="${npc ? 'npc-reference-side' : ''}"><div class="heading-actions"><button class="button button-sm" type="button" data-action="toggle-secrets">${state.showSecrets ? '◉ Hide secrets' : '◉ Reveal secrets'}</button></div>${portrait}</div></div>`;
+    return `${headerProtected ? `<div class="spoiler-block ${state.showSecrets ? '' : 'is-hidden'}"><div class="spoiler-content">${header}</div></div>` : header}
       <div class="reference-body">${blocks}</div><div class="source-footnote">Pulled from <code>${escapeHTML(CONTENT.source)}</code>. Use the guide as a flexible toolkit: clues can move, loops do not need to be counted, and player choice sets the pace.</div>`;
   }
 
@@ -980,15 +987,16 @@
   }
 
   function renderCurrentView() {
-    if (state.view === 'desk') return renderDesk();
+    const protectView = content => `<div class="spoiler-block protected-view ${state.showSecrets ? '' : 'is-hidden'}"><div class="spoiler-content">${content}</div></div>`;
+    if (state.view === 'desk') return protectView(renderDesk());
     if (state.view === 'map') return renderMap();
-    if (state.view === 'readaloud') return renderReadAloud();
+    if (state.view === 'readaloud') return protectView(renderReadAloud());
     if (state.view === 'dice') return renderDicePage();
-    if (state.view === 'cast') return renderCast();
+    if (state.view === 'cast') return protectView(renderCast());
     if (state.view === 'squad') return renderSquad();
-    if (state.view === 'finale') return renderFinale();
-    if (state.view === 'tracker') return renderTracker();
-    if (state.view === 'encounters') return renderEncounters();
+    if (state.view === 'finale') return protectView(renderFinale());
+    if (state.view === 'tracker') return protectView(renderTracker());
+    if (state.view === 'encounters') return protectView(renderEncounters());
     if (state.view === 'cheatsheet') return renderCheatsheet();
     if (state.view.startsWith('section:')) return renderReference(findSection(state.view.replace('section:', '')));
     return renderDesk();
@@ -1004,6 +1012,9 @@
       else item.removeAttribute('aria-current');
     });
     if (state.view === 'encounters') $('#encounter-folder').open = true;
+    else if (state.view === 'cheatsheet') $('#rules-folder').open = true;
+    else if (state.view.startsWith('section:')) $('#guide-folder').open = true;
+    else $('#table-folder').open = true;
     $('#view').innerHTML = renderCurrentView();
     renderRail();
     const active = $('.nav-item.active');
@@ -1068,7 +1079,11 @@
       if (text.toLowerCase().includes(q) || section.title.toLowerCase().includes(q)) found.push({ section, block, text });
     }));
     $('#search-result-label').textContent = `${found.length} result${found.length === 1 ? '' : 's'} for “${query.trim()}”`;
-    results.innerHTML = found.slice(0, 30).map((result, index) => `<button class="search-result" type="button" data-search-section="${escapeHTML(result.section.slug)}"><span class="search-result-location">${escapeHTML(result.section.title)}</span><span class="search-result-title">${result.block.spoiler && !state.showSecrets ? '<span class="search-result-lock">◉ </span>' : ''}${escapeHTML(result.block.type === 'h2' ? result.block.text : result.text.slice(0, 98))}</span><span class="search-result-preview">${result.block.spoiler && !state.showSecrets ? 'Hidden by spoiler shield' : escapeHTML(result.text.slice(0, 160))}</span></button>`).join('') || '<div class="empty-state" style="margin:8px">No matching passage.</div>';
+    results.innerHTML = found.slice(0, 30).map(result => {
+      const protectedResult = result.block.spoiler && !state.showSecrets;
+      const location = result.section.spoiler_title && !state.showSecrets ? 'Spoiler-protected section' : result.section.title;
+      return `<button class="search-result" type="button" data-search-section="${escapeHTML(result.section.slug)}"><span class="search-result-location">${escapeHTML(location)}</span><span class="search-result-title">${protectedResult ? '<span class="search-result-lock">◉ </span>Protected passage' : escapeHTML(result.block.type === 'h2' ? result.block.text : result.text.slice(0, 98))}</span><span class="search-result-preview">${protectedResult ? 'Hidden by spoiler shield' : escapeHTML(result.text.slice(0, 160))}</span></button>`;
+    }).join('') || '<div class="empty-state" style="margin:8px">No matching passage.</div>';
     panel.hidden = false;
   }
 
