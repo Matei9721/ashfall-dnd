@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Ashfall</title>
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#0b1117" stroke="#34434b" stroke-width="2" />
+  <g transform="rotate(45 32 32)">
+    <rect x="17" y="25" width="7" height="20" rx="2" fill="#d9aa62" opacity="0.62" />
+    <rect x="28" y="14" width="8" height="34" rx="2" fill="#edc27e" />
+    <rect x="40" y="29" width="7" height="15" rx="2" fill="#d9aa62" opacity="0.42" />
+  </g>
+</svg>
