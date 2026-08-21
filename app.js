@@ -7,6 +7,18 @@
   const EXPORT_FORMAT = 'ashfall-dm-workspace';
   const EXPORT_VERSION = 1;
   const NPC_NAMES = ['Elias Voss', 'Mara Vale', 'Nessa Grey', 'Mayor Aldren Morn', 'Constable Iven Rook', 'Silas Wren', 'Seraphine Vey'];
+  const ROUTE_BY_VIEW = {
+    desk: 'desk',
+    map: 'map',
+    readaloud: 'read-aloud',
+    dice: 'dice',
+    cast: 'cast',
+    finale: 'finale',
+    tracker: 'tracker',
+    encounters: 'encounters',
+    cheatsheet: 'rules',
+  };
+  const VIEW_BY_ROUTE = Object.fromEntries(Object.entries(ROUTE_BY_VIEW).map(([view, route]) => [route, view]));
   const NPC_PLAYBOOK = {
     'Elias Voss': { tier: 'Core guide', memory: 'Full memory', enters: 'Arrival / first reset', starts: 'The escort, the 3:12 wake-up and the restoration argument.' },
     'Mara Vale': { tier: 'Core heart', memory: 'No factual memory', enters: 'Arrival / first crisis', starts: 'Hospitality, Tomas’s empty place and the Lantern House fire.' },
@@ -115,6 +127,41 @@
     return String(value).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   }
 
+  const CHARACTER_SLUGS = new Set(NPC_NAMES.map(slugify));
+
+  function hashForView(view) {
+    if (view.startsWith('section:')) {
+      const slug = view.slice('section:'.length);
+      const group = CHARACTER_SLUGS.has(slug) ? 'character' : 'guide';
+      return `#/${group}/${encodeURIComponent(slug)}`;
+    }
+    return `#/${ROUTE_BY_VIEW[view] || ROUTE_BY_VIEW.desk}`;
+  }
+
+  function viewFromHash(hash = window.location.hash) {
+    if (!hash) return null;
+    try {
+      const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
+      if (parts.length === 1) return VIEW_BY_ROUTE[parts[0]] || null;
+      if (parts.length !== 2 || !['character', 'guide'].includes(parts[0])) return null;
+      const section = findSection(parts[1]);
+      if (!section || (parts[0] === 'character' && !CHARACTER_SLUGS.has(section.slug))) return null;
+      return `section:${section.slug}`;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function syncHash(view, replace = false) {
+    const nextHash = hashForView(view);
+    if (window.location.hash === nextHash) return;
+    try {
+      window.history[replace ? 'replaceState' : 'pushState'](null, '', nextHash);
+    } catch (error) {
+      window.location.hash = nextHash;
+    }
+  }
+
   function loadState() {
     const base = {
       view: 'desk',
@@ -206,6 +253,8 @@
   }
 
   let state = loadState();
+  const initialRouteView = viewFromHash();
+  if (initialRouteView) state.view = initialRouteView;
   let toastTimer;
   let portraitReturnFocus;
 
@@ -314,6 +363,7 @@
   function setView(view, options = {}) {
     if (view !== 'map' || state.view !== 'map') state.map.showDetails = false;
     state.view = view;
+    if (options.updateHash !== false) syncHash(view, options.replaceHash === true);
     saveState();
     render();
     const contentWrap = $('.content-wrap');
@@ -324,6 +374,15 @@
 
   function setGuideView(slug) {
     setView(`section:${slug}`);
+  }
+
+  function applyHashRoute() {
+    const routedView = viewFromHash();
+    if (!routedView) {
+      syncHash(state.view, true);
+      return;
+    }
+    if (routedView !== state.view) setView(routedView, { updateHash: false, focus: true });
   }
 
   function updateBreadcrumb() {
@@ -393,7 +452,7 @@
     return `<section class="hero">
       <div class="hero-copy">
         <div class="eyebrow">THE DAY THAT REFUSES TO DIE</div>
-        <h1>The day resets.<br />Your table should not.</h1>
+        <h1>Tomorrow never comes to Ashfall.</h1>
         <p>Ashfall is a creepy time-loop mystery about memory, consent and the cost of mercy. Keep the truth close, let the players choose their route, and let every meaningful choice teach the crystal what this village could become.</p>
         <div class="hero-note">“There is no consequence-free ending.”</div>
       </div>
@@ -927,9 +986,12 @@
     $('#npc-portrait-dialog').addEventListener('click', event => { if (event.target === event.currentTarget || event.target.classList.contains('npc-portrait-stage')) closeNpcPortrait(); });
     $('#npc-portrait-dialog').addEventListener('close', () => { portraitReturnFocus?.focus(); portraitReturnFocus = null; });
     $('#source-button').addEventListener('click', () => setView('section:campaign-overview'));
+    window.addEventListener('popstate', applyHashRoute);
+    window.addEventListener('hashchange', applyHashRoute);
   }
 
   wireUI();
   render();
+  syncHash(state.view, true);
   showStoryNotice();
 })();
