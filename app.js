@@ -6,11 +6,11 @@
   const STORY_NOTICE_KEY = 'ashfall-story-notice-dismissed-v1';
   const EXPORT_FORMAT = 'ashfall-dm-workspace';
   const EXPORT_VERSION = 1;
+  let activeSquadMember = null;
   const NPC_NAMES = ['Elias Voss', 'Mara Vale', 'Nessa Grey', 'Mayor Aldren Morn', 'Constable Iven Rook', 'Silas Wren', 'Seraphine Vey'];
   const ROUTE_BY_VIEW = {
     desk: 'desk',
     map: 'map',
-    readaloud: 'read-aloud',
     dice: 'dice',
     cast: 'cast',
     squad: 'squad',
@@ -335,6 +335,7 @@
       return {
         ...base,
         ...saved,
+        view: saved.view === 'readaloud' ? base.view : (saved.view || base.view),
         revelations: { ...base.revelations, ...(saved.revelations || {}) },
         relationships: { ...base.relationships, ...(saved.relationships || {}) },
         finale: { ...base.finale, ...(saved.finale || {}) },
@@ -532,8 +533,7 @@
   function updateBreadcrumb() {
     let label = state.view === 'desk' ? 'Session desk'
       : state.view === 'map' ? 'Map'
-        : state.view === 'readaloud' ? 'Read aloud'
-          : state.view === 'dice' ? 'Dice roller'
+        : state.view === 'dice' ? 'Dice roller'
             : state.view === 'cast' ? 'The cast'
               : state.view === 'squad' ? 'The squad'
                 : state.view === 'finale' ? 'Finale'
@@ -707,17 +707,10 @@
   function renderDesk() {
     const quick = findSection('Quick start');
     const pacing = findSection('Player-paced story structure');
-    const firstLoop = findSection('Running the first loop');
-    const repeatingDay = findSection('The repeating day');
     const mustHappen = pacing?.blocks.find(block => block.type === 'h2' && block.text === 'What must happen eventually');
     const mustHappenIndex = pacing?.blocks.indexOf(mustHappen);
     const mustHappenList = pacing?.blocks[Number(mustHappenIndex) + 1];
     const revelations = findTable('Revelation');
-    const prompts = getScenePrompts();
-    const prompt = prompts[state.promptIndex % prompts.length] || state.prompt;
-    const firstLoopTimeline = findTableInSection(firstLoop, 'Time');
-    const schedule = findTableInSection(repeatingDay, 'Time');
-    const scheduleRows = schedule?.rows.slice(1, 4) || [];
     const revealed = Object.values(state.revelations).filter(Boolean).length;
     const npcCount = Object.values(state.relationships).filter(item => item?.attitude || item?.note).length;
 
@@ -741,27 +734,7 @@
         <section class="card metric-card"><span class="card-label">Revelations</span><span class="metric">${revealed}<span style="font-size:16px;color:var(--muted)"> / ${Math.max(0, (revelations?.rows.length || 1) - 1)}</span></span><p>Essential truths logged in the tracker.</p></section>
         <section class="card metric-card"><span class="card-label">NPC notes</span><span class="metric">${npcCount}<span style="font-size:16px;color:var(--muted)"> / 7</span></span><p>Relationships with emotional carryover.</p></section>
       </div>
-      <section class="card card-padded first-loop-card">
-        <div class="card-label"><span>${state.loop === 1 ? 'First loop • run this now' : 'First-loop reference'}</span><span>1:00 p.m. → 3:13 a.m.</span></div>
-        <div class="first-loop-heading"><div><h3 class="card-title">Establish normal. Create one consequence. Erase it.</h3><p>The party can sleep: the Witness Crystal wakes every anchored identity automatically at 3:12 a.m.</p></div><button class="button button-primary" type="button" data-view="section:${slugify('Running the first loop')}">Open complete runner →</button></div>
-        <div class="first-loop-strip">${(firstLoopTimeline?.rows.slice(1) || []).map(row => `<div class="first-loop-step"><span>${escapeHTML(row[0])}</span><strong>${escapeHTML(row[1])}</strong><small>${escapeHTML(row[2] || '')}</small></div>`).join('')}</div>
-      </section>
-      <div class="desk-grid" style="margin-top:14px">
-        <div>${renderDiceRoller(true)}</div>
-        <section class="card card-padded prompt-card dice-side-card"><div class="card-label"><span>Useful at a glance</span><span>D20 / D100</span></div><div class="prompt-text">Roll in the same window where you keep the scene. The last result stays visible while you describe what happens next.</div><div class="prompt-meta"><span>Supports d20, 2d6+3, d8−1 and more.</span><button class="text-button" type="button" data-view="dice">Open full roller →</button></div></section>
-      </div>
-      <div class="desk-grid" style="margin-top:14px">
-        <section class="card card-padded prompt-card">
-          <div class="card-label"><span>Scene engine</span><button class="button button-sm" type="button" data-action="next-prompt">Shuffle prompt</button></div>
-          <div class="prompt-text">${escapeHTML(prompt)}</div>
-          <div class="prompt-meta"><span>Use this when the table stalls.</span><span>${escapeHTML(state.promptIndex + 1)} / ${prompts.length}</span></div>
-        </section>
-        <section class="card card-padded prompt-card">
-          <div class="card-label"><span>Next scheduled pressure</span><span>From the repeating day</span></div>
-          <div class="quick-actions">${scheduleRows.map(row => `<button class="button button-sm" type="button" data-action="schedule-event" data-event="${escapeHTML(row.join(' — '))}">${escapeHTML(row[0])}</button>`).join('')}</div>
-          <div class="prompt-meta"><span>${escapeHTML(scheduleRows[0]?.[1] || 'Advance an event when the party stalls.')}</span><button class="text-button" type="button" data-view="section:${slugify('The repeating day')}">Open schedule →</button></div>
-        </section>
-      </div>
+      <div class="desk-dice">${renderDiceRoller(true)}</div>
       <div class="section-heading"><div><h2>Keep the spine visible</h2><p>${escapeHTML(sectionDescription(quick))}</p></div><button class="button" type="button" data-view="section:${slugify('Quick start')}">Open quick start →</button></div>
       <div class="card card-padded">
         <div class="card-label"><span>What must happen eventually</span><span>Do not hide these behind a roll</span></div>
@@ -802,20 +775,6 @@
     const header = `<div class="reference-header ${npc ? 'npc-reference-header' : ''}"><div><div class="eyebrow">GUIDE REFERENCE</div><h1>${escapeHTML(section.title)}</h1><p>${escapeHTML(sectionDescription(section))}</p>${dossierMeta}</div><div class="${npc ? 'npc-reference-side' : ''}"><div class="heading-actions"><button class="button button-sm" type="button" data-action="toggle-secrets">${state.showSecrets ? '◉ Hide secrets' : '◉ Reveal secrets'}</button></div>${portrait}</div></div>`;
     return `${headerProtected ? `<div class="spoiler-block ${state.showSecrets ? '' : 'is-hidden'}"><div class="spoiler-content">${header}</div></div>` : header}
       <div class="reference-body">${blocks}</div><div class="source-footnote">Pulled from <code>${escapeHTML(CONTENT.source)}</code>. Use the guide as a flexible toolkit: clues can move, loops do not need to be counted, and player choice sets the pace.</div>`;
-  }
-
-  function renderReadAloud() {
-    const section = findSection('Read-aloud descriptions');
-    const cards = [];
-    let pendingTitle = '';
-    (section?.blocks || []).forEach(block => {
-      if (block.type === 'p' && block.text.startsWith('READ ALOUD')) pendingTitle = block.text.replace(/^READ ALOUD\s*[—-]?\s*/i, '');
-      else if (block.type === 'callout') {
-        cards.push(`<article class="readaloud-card"><h3>${escapeHTML(pendingTitle || 'Read aloud')}</h3><p>${escapeHTML(block.text)}</p><button class="button button-sm copy-readaloud" type="button" data-copy="${escapeHTML(block.text)}">Copy</button></article>`);
-        pendingTitle = '';
-      }
-    });
-    return `<div class="reference-header"><div><div class="eyebrow">TABLE-READY PROSE</div><h1>Read aloud</h1><p>Seven atmospheric entrances and thresholds. Copy a passage when the table reaches it, then get back to watching the players.</p></div><div class="heading-actions"><button class="button button-sm" type="button" data-view="section:${slugify('Read-aloud descriptions')}">Open full section →</button></div></div><div class="readaloud-list">${cards.join('')}</div>`;
   }
 
   function sectionGroups(section) {
@@ -911,7 +870,16 @@
   }
 
   function renderSquad() {
-    return `<div class="reference-header squad-header"><div><div class="eyebrow">PLAYER CHARACTERS • QUICK REFERENCE • TABLE READY</div><h1>The squad</h1><p>Keep the party’s portraits, combat numbers, abilities and roleplay hooks together before the road carries them into Ashfall.</p></div></div><button class="squad-group-scene npc-portrait-trigger" type="button" data-portrait-name="The squad" aria-label="Show the squad preparing the carriage full screen"><img src="${escapeHTML(SQUAD_SCENE.image)}" alt="${escapeHTML(SQUAD_SCENE.alt)}" width="${SQUAD_SCENE.width}" height="${SQUAD_SCENE.height}" /><span class="squad-group-caption"><small>ESCORT DEPARTURE</small><strong>Preparing the carriage</strong></span><span class="portrait-open-hint" aria-hidden="true">⛶ Show scene</span></button><nav class="squad-jump" aria-label="Squad members">${SQUAD_MEMBERS.map(member => `<button type="button" data-squad-target="squad-${slugify(member.name)}">${escapeHTML(member.name)}</button>`).join('')}</nav><div class="squad-list">${SQUAD_MEMBERS.map(renderSquadMember).join('')}</div>`;
+    const selectedIndex = SQUAD_MEMBERS.findIndex(member => member.name === activeSquadMember);
+    const selectedMember = selectedIndex >= 0 ? SQUAD_MEMBERS[selectedIndex] : null;
+    const tabs = SQUAD_MEMBERS.map(member => {
+      const selected = member === selectedMember;
+      return `<button class="squad-tab ${selected ? 'active' : ''}" type="button" role="tab" aria-selected="${selected}" ${selected ? 'aria-controls="squad-character-panel"' : ''} data-squad-member="${escapeHTML(member.name)}"><img src="${escapeHTML(member.portrait.image)}" alt="" width="72" height="72" style="object-position:${escapeHTML(member.portrait.position)}" /><span>${escapeHTML(member.name)}</span><small>${selected ? 'Open' : 'View character'}</small></button>`;
+    }).join('');
+    const characterPanel = selectedMember
+      ? `<div id="squad-character-panel" class="squad-list" role="tabpanel" tabindex="-1">${renderSquadMember(selectedMember, selectedIndex)}</div>`
+      : `<div class="card squad-selection-empty"><span class="eyebrow">CHARACTER SHEETS STAY HIDDEN</span><h2>Choose a character to open</h2><p>Only names and portraits are shown here. Stats and character details appear after you select someone.</p></div>`;
+    return `<div class="reference-header squad-header"><div><div class="eyebrow">PLAYER CHARACTERS • QUICK REFERENCE • TABLE READY</div><h1>The squad</h1><p>Choose one character at a time so the sheet you need is close at hand and the others stay out of view.</p></div></div><button class="squad-group-scene npc-portrait-trigger" type="button" data-portrait-name="The squad" aria-label="Show the squad preparing the carriage full screen"><img src="${escapeHTML(SQUAD_SCENE.image)}" alt="${escapeHTML(SQUAD_SCENE.alt)}" width="${SQUAD_SCENE.width}" height="${SQUAD_SCENE.height}" /><span class="squad-group-caption"><small>ESCORT DEPARTURE</small><strong>Preparing the carriage</strong></span><span class="portrait-open-hint" aria-hidden="true">⛶ Show scene</span></button><nav class="squad-tabs" role="tablist" aria-label="Choose a squad member">${tabs}</nav>${characterPanel}`;
   }
 
   function renderFinale() {
@@ -990,7 +958,6 @@
     const protectView = content => `<div class="spoiler-block protected-view ${state.showSecrets ? '' : 'is-hidden'}"><div class="spoiler-content">${content}</div></div>`;
     if (state.view === 'desk') return protectView(renderDesk());
     if (state.view === 'map') return renderMap();
-    if (state.view === 'readaloud') return protectView(renderReadAloud());
     if (state.view === 'dice') return renderDicePage();
     if (state.view === 'cast') return protectView(renderCast());
     if (state.view === 'squad') return renderSquad();
@@ -1043,12 +1010,6 @@
     showToast(state.showSecrets ? 'Spoiler shield lifted.' : 'Spoiler shield active.');
   }
 
-  function copyText(text) {
-    const value = String(text || '');
-    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(value).then(() => showToast('Copied to clipboard.')).catch(() => showToast('Copy unavailable — select the passage manually.'));
-    else showToast('Copy unavailable — select the passage manually.');
-  }
-
   function openNpcPortrait(name, trigger) {
     const squadMember = SQUAD_MEMBERS.find(member => member.name === name);
     const npc = NPC_META[name] || squadMember?.portrait || (name === 'The squad' ? SQUAD_SCENE : null);
@@ -1097,8 +1058,13 @@
     }
     const portrait = event.target.closest('[data-portrait-name]');
     if (portrait) { openNpcPortrait(portrait.dataset.portraitName, portrait); return; }
-    const squadTarget = event.target.closest('[data-squad-target]');
-    if (squadTarget) { document.getElementById(squadTarget.dataset.squadTarget)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+    const squadMember = event.target.closest('[data-squad-member]');
+    if (squadMember) {
+      activeSquadMember = squadMember.dataset.squadMember;
+      render();
+      $('#squad-character-panel')?.focus({ preventScroll: true });
+      return;
+    }
     const view = event.target.closest('[data-view]');
     if (view) { setView(view.dataset.view); return; }
     const section = event.target.closest('[data-section]');
@@ -1154,8 +1120,6 @@
     if (ending) { state.finale.ending = ending.dataset.ending; saveState(); render(); showToast('Ending selected for the finale board.'); return; }
     const finaleDelta = event.target.closest('[data-finale-delta]');
     if (finaleDelta) { const [field, raw] = finaleDelta.dataset.finaleDelta.split(':'); state.finale[field] = Math.max(0, Math.min(9, Number(state.finale[field]) + Number(raw))); saveState(); render(); return; }
-    const copy = event.target.closest('[data-copy]');
-    if (copy) { copyText(copy.dataset.copy); return; }
   }
 
   function handleInput(event) {
@@ -1173,7 +1137,7 @@
     if (event.key === 'Escape' && $('#npc-portrait-dialog')?.open) { event.preventDefault(); closeNpcPortrait(); return; }
     if (event.target.matches('[data-dice-input]') && event.key === 'Enter') { event.preventDefault(); performDiceRoll(event.target.value); return; }
     if (event.target.matches('input, textarea, select')) return;
-    if (['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(event.key)) setView(['desk', 'map', 'readaloud', 'dice', 'cast', 'finale', 'tracker', 'encounters', 'cheatsheet'][Number(event.key) - 1]);
+    if (['1', '2', '3', '4', '5', '6', '7', '8'].includes(event.key)) setView(['desk', 'map', 'dice', 'cast', 'finale', 'tracker', 'encounters', 'cheatsheet'][Number(event.key) - 1]);
     if (!event.metaKey && !event.ctrlKey && !event.altKey && event.key.toLowerCase() === 's') setView('squad');
     if (event.key === 'Escape') { $('#search-results-panel').hidden = true; $('.search-box')?.classList.remove('search-open'); $('#sidebar').classList.remove('open'); }
   }
